@@ -1,0 +1,20 @@
+<%@ page pageEncoding="UTF-8" %>
+<footer class="site-footer">
+    <div class="container">
+        <div class="footer-content">
+            <div style="display: flex; align-items: center; gap: 1.5rem;">
+                <div class="font-headline" style="font-size: 2.1rem; font-weight: 800; color: #0d4722;">PraveenMart</div>
+                <div style="font-size: 0.88rem; color: var(--color-on-surface-variant);">
+                    &copy; <%= java.time.Year.now().getValue() %> PraveenMart.
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Shipping & Returns</a>
+                <a href="#">Contact Us</a>
+            </div>
+        </div>
+    </div>
+</footer>

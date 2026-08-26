@@ -1,0 +1,68 @@
+<%@ page pageEncoding="UTF-8" %>
+<%@ page import="com.praveen.praveenmart.model.User" %>
+<%@ page import="com.praveen.praveenmart.service.CartService" %>
+<%
+    User sessionUser = (User) session.getAttribute("user");
+    int cartCount = 0;
+    if (sessionUser != null) {
+        try {
+            CartService headerCartService = new CartService();
+            cartCount = headerCartService.getCartItemCount(sessionUser.getId());
+        } catch (Exception ignored) {}
+    }
+%>
+<header class="site-header">
+    <div class="container">
+        <div class="nav-bar">
+            <!-- Brand Logo -->
+            <a href="<%= request.getContextPath() %>/products" class="brand-logo">
+                <span>PraveenMart</span>
+            </a>
+
+            <!-- Navigation Links -->
+            <nav class="nav-links">
+                <a href="<%= request.getContextPath() %>/products" class="nav-link">Shop</a>
+                <% if (sessionUser != null) { %>
+                    <a href="<%= request.getContextPath() %>/orders" class="nav-link">My Orders</a>
+                    <% if ("SELLER".equalsIgnoreCase(sessionUser.getRole()) || "ADMIN".equalsIgnoreCase(sessionUser.getRole())) { %>
+                        <a href="<%= request.getContextPath() %>/seller/dashboard" class="nav-link">Seller Hub</a>
+                    <% } %>
+                    <% if ("ADMIN".equalsIgnoreCase(sessionUser.getRole())) { %>
+                        <a href="<%= request.getContextPath() %>/admin/dashboard" class="nav-link" style="color: #b06000; font-weight: 700;">Admin Panel</a>
+                    <% } %>
+                <% } %>
+            </nav>
+
+            <!-- User Authentication & Cart Actions -->
+            <div class="nav-actions">
+                <% if (sessionUser != null) { %>
+                    <!-- Cart Button with Count Badge -->
+                    <a href="<%= request.getContextPath() %>/cart" class="nav-icon-btn" title="View Cart">
+                        <span class="material-symbols-outlined" style="font-size: 1.3rem;">shopping_bag</span>
+                        <% if (cartCount > 0) { %>
+                            <span class="nav-badge-count"><%= cartCount %></span>
+                        <% } %>
+                    </a>
+
+                    <!-- User Account / Profile -->
+                    <a href="<%= request.getContextPath() %>/dashboard.jsp" class="btn btn-secondary btn-pill" style="padding: 0.45rem 1.1rem; font-size: 0.88rem;" title="<%= sessionUser.getEmail() %>">
+                        <span class="material-symbols-outlined" style="font-size: 1.15rem; color: var(--color-primary);">account_circle</span>
+                        <span><%= sessionUser.getName() %></span>
+                    </a>
+
+                    <a href="<%= request.getContextPath() %>/logout" class="btn btn-outlined btn-pill" style="padding: 0.45rem 0.9rem; font-size: 0.85rem;">
+                        <span>Sign Out</span>
+                    </a>
+                <% } else { %>
+                    <a href="<%= request.getContextPath() %>/login.jsp" class="btn btn-primary btn-pill" style="padding: 0.45rem 1.2rem; font-size: 0.88rem;">
+                        <span class="material-symbols-outlined" style="font-size: 1.15rem;">login</span>
+                        <span>Sign In</span>
+                    </a>
+                    <a href="<%= request.getContextPath() %>/register.jsp" class="btn btn-secondary btn-pill" style="padding: 0.45rem 1.1rem; font-size: 0.88rem;">
+                        <span>Register</span>
+                    </a>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</header>

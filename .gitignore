@@ -1,0 +1,19 @@
+# macOS Finder metadata
+.DS_Store
+
+# IDE settings
+.idea/
+.vscode/
+*.iml
+
+# Maven build output
+target/
+
+# Local runtimes and archives
+apache-tomcat-*/
+*.zip
+
+# Local H2 database files
+*.mv.db
+*.trace.db
+*.lock.db
