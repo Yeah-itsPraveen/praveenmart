@@ -171,10 +171,6 @@
             <h1 class="font-headline" style="font-size: 2.2rem; margin-bottom: 0.35rem;">Platform Administration Panel</h1>
             <p style="color: var(--color-on-surface-variant); font-size: 0.95rem;">System overview, user oversight, marketplace orders, and catalog listing moderation.</p>
         </div>
-        <a href="<%= request.getContextPath() %>/products" class="btn btn-secondary btn-pill">
-            <span class="material-symbols-outlined">storefront</span>
-            <span>View Marketplace</span>
-        </a>
     </div>
 
     <% if (msgSuccess != null) { %>

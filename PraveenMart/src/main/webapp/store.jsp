@@ -199,12 +199,69 @@
             margin-top: auto;
             padding-top: 0.75rem;
             border-top: 1px solid var(--color-surface-container);
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
         .product-price {
             font-size: 1.2rem;
             font-weight: 700;
             color: var(--color-neutral-dark);
+        }
+
+        .card-qty-stepper {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid var(--color-outline-variant);
+            border-radius: var(--radius-pill);
+            background: var(--color-surface-container);
+            overflow: hidden;
+            height: 32px;
+        }
+
+        .card-qty-stepper .qty-btn {
+            background: transparent;
+            border: none;
+            width: 26px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--color-on-surface);
+            cursor: pointer;
+            transition: background-color 0.15s ease, color 0.15s ease;
+            user-select: none;
+            padding: 0;
+        }
+
+        .card-qty-stepper .qty-btn:hover {
+            background: rgba(13, 71, 34, 0.12);
+            color: var(--color-primary);
+        }
+
+        .card-qty-stepper .qty-btn:active {
+            transform: scale(0.92);
+        }
+
+        .card-qty-stepper .qty-input-field {
+            width: 26px;
+            border: none;
+            background: transparent;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--color-on-surface);
+            -moz-appearance: textfield;
+            padding: 0;
+            pointer-events: none;
+        }
+
+        .card-qty-stepper .qty-input-field::-webkit-outer-spin-button,
+        .card-qty-stepper .qty-input-field::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
     </style>
 </head>
@@ -314,10 +371,20 @@
                             </div>
 
                             <% if (p.getStockQty() > 0) { %>
-                                <form action="<%= request.getContextPath() %>/cart/add" method="post" style="display: inline;">
+                                <form action="<%= request.getContextPath() %>/cart/add" method="post" class="add-to-cart-form"
+                                      data-product-id="<%= p.getId() %>"
+                                      data-product-name="<%= p.getName().replace("\"", "&quot;") %>"
+                                      data-product-price="<%= currencyFormat.format(p.getPrice() != null ? p.getPrice() : BigDecimal.ZERO) %>"
+                                      data-product-category="<%= p.getCategory() != null ? p.getCategory().replace("\"", "&quot;") : "" %>"
+                                      data-product-image="<%= p.getImageUrl() != null ? p.getImageUrl() : "" %>"
+                                      style="display: flex; align-items: center; gap: 0.4rem;">
                                     <input type="hidden" name="productId" value="<%= p.getId() %>">
-                                    <input type="hidden" name="quantity" value="1">
-                                    <button type="submit" class="btn btn-primary btn-pill" style="padding: 0.45rem 1rem; font-size: 0.85rem;">
+                                    <div class="card-qty-stepper">
+                                        <button type="button" class="qty-btn qty-btn-minus" aria-label="Decrease quantity">−</button>
+                                        <input type="number" name="quantity" class="qty-input-field" value="1" min="1" max="<%= p.getStockQty() %>" readonly>
+                                        <button type="button" class="qty-btn qty-btn-plus" aria-label="Increase quantity">+</button>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-pill btn-add-cart" style="padding: 0.45rem 0.85rem; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 0.25rem;">
                                         <span class="material-symbols-outlined" style="font-size: 1rem;">add_shopping_cart</span>
                                         <span>Add</span>
                                     </button>

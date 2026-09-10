@@ -30,28 +30,28 @@ public class UserServiceTest {
     @Test
     public void testAuthenticateSuccess() {
         String hash = PasswordUtil.hashPassword("secret123");
-        User user = new User(1L, "Praveen", "praveen@test.com", hash, "BUYER", null);
-        when(userDAO.findByEmail("praveen@test.com")).thenReturn(user);
+        User user = new User(1L, "Test User", "user@test.com", hash, "BUYER", null);
+        when(userDAO.findByEmail("user@test.com")).thenReturn(user);
 
-        User authenticated = userService.authenticate("praveen@test.com", "secret123");
+        User authenticated = userService.authenticate("user@test.com", "secret123");
         assertNotNull(authenticated);
-        assertEquals("Praveen", authenticated.getName());
+        assertEquals("Test User", authenticated.getName());
     }
 
     @Test
     public void testAuthenticateWrongPassword() {
         String hash = PasswordUtil.hashPassword("secret123");
-        User user = new User(1L, "Praveen", "praveen@test.com", hash, "BUYER", null);
-        when(userDAO.findByEmail("praveen@test.com")).thenReturn(user);
+        User user = new User(1L, "Test User", "user@test.com", hash, "BUYER", null);
+        when(userDAO.findByEmail("user@test.com")).thenReturn(user);
 
-        User authenticated = userService.authenticate("praveen@test.com", "wrongpass");
+        User authenticated = userService.authenticate("user@test.com", "wrongpass");
         assertNull(authenticated);
     }
 
     @Test
     public void testRegisterPasswordTooShortThrowsException() {
         assertThrows(ValidationException.class, () -> {
-            userService.registerUser("Praveen", "praveen@test.com", "short", "BUYER");
+            userService.registerUser("Test User", "user@test.com", "short", "BUYER");
         });
     }
 
@@ -63,5 +63,16 @@ public class UserServiceTest {
         boolean registered = userService.registerUser("New User", "newuser@test.com", "validpassword123", "SELLER");
         assertTrue(registered);
         verify(userDAO, times(1)).createUser(any(User.class));
+    }
+
+    @Test
+    public void testRegisterWithAdminRoleDefaultsToBuyer() {
+        when(userDAO.findByEmail("adminattempt@test.com")).thenReturn(null);
+        org.mockito.ArgumentCaptor<User> captor = org.mockito.ArgumentCaptor.forClass(User.class);
+        when(userDAO.createUser(captor.capture())).thenReturn(true);
+
+        boolean registered = userService.registerUser("Hacker", "adminattempt@test.com", "validpassword123", "ADMIN");
+        assertTrue(registered);
+        assertEquals("BUYER", captor.getValue().getRole());
     }
 }

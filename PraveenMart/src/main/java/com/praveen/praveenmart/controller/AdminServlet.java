@@ -46,7 +46,7 @@ public class AdminServlet extends HttpServlet {
             throws ServletException, IOException {
 
         User user = getSessionUser(request);
-        if (user == null || !"ADMIN".equalsIgnoreCase(user.getRole())) {
+        if (user == null || !"ADMIN".equalsIgnoreCase(user.getRole()) || !"admin@praveenmart.com".equalsIgnoreCase(user.getEmail())) {
             response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
@@ -69,7 +69,7 @@ public class AdminServlet extends HttpServlet {
             throws ServletException, IOException {
 
         User user = getSessionUser(request);
-        if (user == null || !"ADMIN".equalsIgnoreCase(user.getRole())) {
+        if (user == null || !"ADMIN".equalsIgnoreCase(user.getRole()) || !"admin@praveenmart.com".equalsIgnoreCase(user.getEmail())) {
             response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }

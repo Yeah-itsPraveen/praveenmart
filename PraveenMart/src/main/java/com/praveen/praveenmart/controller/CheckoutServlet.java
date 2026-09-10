@@ -78,8 +78,13 @@ public class CheckoutServlet extends HttpServlet {
 
         String fullAddress = String.format("%s, %s, %s - %s", street, city, state, pincode);
 
+        java.util.Map<String, String> paymentDetails = new java.util.HashMap<>();
+        paymentDetails.put("cardNumber", request.getParameter("cardNumber"));
+        paymentDetails.put("cvv", request.getParameter("cvv"));
+        paymentDetails.put("upiId", request.getParameter("upiId"));
+
         try {
-            Order order = orderService.placeOrder(user.getId(), fullAddress, paymentMethod);
+            Order order = orderService.placeOrder(user.getId(), fullAddress, paymentMethod, paymentDetails);
             logger.info("Order successfully placed via checkout: orderId={}", order.getId());
             response.sendRedirect(request.getContextPath() + "/orders/success?orderId=" + order.getId());
 

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Account - PraveenMart</title>
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/theme.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/theme.css?v=1.1">
     <style>
         body {
             min-height: 100vh;
@@ -42,6 +42,44 @@
             text-decoration: none;
         }
 
+        .password-toggle-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent !important;
+            background-color: transparent !important;
+            border: none !important;
+            border-width: 0 !important;
+            outline: none !important;
+            box-shadow: none !important;
+            padding: 0 0.95rem;
+            color: var(--color-on-surface-variant);
+            cursor: pointer;
+            transition: color 0.18s ease, transform 0.1s ease;
+            user-select: none;
+            flex-shrink: 0;
+            -webkit-appearance: none !important;
+            appearance: none !important;
+        }
+
+        .password-toggle-btn:hover {
+            color: var(--color-primary);
+            background: transparent !important;
+            border: none !important;
+        }
+
+        .password-toggle-btn:focus,
+        .password-toggle-btn:active {
+            background: transparent !important;
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+            transform: scale(0.92);
+        }
+
+        .password-toggle-btn .material-symbols-outlined {
+            font-size: 1.28rem;
+        }
     </style>
 </head>
 <body>
@@ -71,7 +109,6 @@
                 <select class="form-select-field" id="role" name="role" required>
                     <option value="CUSTOMER" selected>Customer</option>
                     <option value="SELLER">Seller</option>
-                    <option value="ADMIN">Admin</option>
                 </select>
                 <div class="form-select-arrow">
                     <span class="material-symbols-outlined">expand_more</span>
@@ -99,7 +136,17 @@
                 <div class="form-input-icon">
                     <span class="material-symbols-outlined">lock</span>
                 </div>
-                <input type="password" class="form-input-field" id="password" name="password" placeholder="At least 8 characters" minlength="8" required>
+                <input type="password" class="form-input-field" id="password" name="password" placeholder="At least 8 characters" minlength="8" required autocomplete="new-password">
+                <button type="button" class="password-toggle-btn" id="togglePasswordBtn" title="Show password" aria-label="Show password" tabindex="-1" style="background: transparent !important; background-color: transparent !important; border: none !important; border-width: 0 !important; outline: none !important; box-shadow: none !important; padding: 0 0.95rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; color: var(--color-on-surface-variant); -webkit-appearance: none !important; appearance: none !important;">
+                    <span class="material-symbols-outlined" id="togglePasswordIcon">visibility</span>
+                </button>
+            </div>
+
+            <div style="margin: -0.5rem 0 1.25rem; display: flex; justify-content: flex-end;">
+                <label style="display: flex; align-items: center; gap: 0.35rem; cursor: pointer; font-size: 0.85rem; color: var(--color-on-surface-variant); user-select: none;">
+                    <input type="checkbox" id="showPasswordCheckbox" style="accent-color: var(--color-primary); cursor: pointer;">
+                    <span>Show password</span>
+                </label>
             </div>
 
             <button type="submit" class="btn btn-primary btn-pill" style="width: 100%; padding: 0.95rem; font-size: 1rem; margin-top: 0.5rem;">
@@ -114,6 +161,47 @@
         </div>
     </div>
 </div>
+
+<script>
+    (function() {
+        const pwdInput = document.getElementById('password');
+        const toggleBtn = document.getElementById('togglePasswordBtn');
+        const toggleIcon = document.getElementById('togglePasswordIcon');
+        const showCb = document.getElementById('showPasswordCheckbox');
+
+        if (!pwdInput) return;
+
+        function setVisibility(show) {
+            pwdInput.type = show ? 'text' : 'password';
+            if (toggleIcon) {
+                toggleIcon.textContent = show ? 'visibility_off' : 'visibility';
+            }
+            if (toggleBtn) {
+                toggleBtn.setAttribute('title', show ? 'Hide password' : 'Show password');
+                toggleBtn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+            }
+            if (showCb && showCb.checked !== show) {
+                showCb.checked = show;
+            }
+        }
+
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const willShow = pwdInput.type === 'password';
+                setVisibility(willShow);
+                pwdInput.focus();
+            });
+        }
+
+        if (showCb) {
+            showCb.addEventListener('change', function() {
+                setVisibility(showCb.checked);
+                pwdInput.focus();
+            });
+        }
+    })();
+</script>
 
 </body>
 </html>

@@ -8,20 +8,30 @@ import com.praveen.praveenmart.dao.impl.OrderDAOImpl;
 import com.praveen.praveenmart.dao.impl.ProductDAOImpl;
 import com.praveen.praveenmart.exception.AppException;
 import com.praveen.praveenmart.exception.InsufficientStockException;
+import com.praveen.praveenmart.exception.ResourceNotFoundException;
 import com.praveen.praveenmart.exception.ValidationException;
 import com.praveen.praveenmart.model.CartItem;
 import com.praveen.praveenmart.model.Order;
 import com.praveen.praveenmart.model.OrderItem;
 import com.praveen.praveenmart.model.Product;
 import com.praveen.praveenmart.util.DBUtil;
+import com.praveen.praveenmart.service.payment.PaymentResult;
+import com.praveen.praveenmart.service.payment.PaymentStrategy;
+import com.praveen.praveenmart.service.payment.PaymentStrategyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+/**
+ * Service orchestrating order placement, stock updates, payment processing, and status workflow.
+ */
 public class OrderService {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
@@ -39,7 +49,17 @@ public class OrderService {
         this.productDAO = productDAO;
     }
 
+    /**
+     * Places an order from cart contents using mock payment confirmation.
+     */
     public Order placeOrder(Long buyerId, String shippingAddress, String paymentMethod) {
+        return placeOrder(buyerId, shippingAddress, paymentMethod, Collections.emptyMap());
+    }
+
+    /**
+     * Places an order from cart contents using swappable PaymentStrategy.
+     */
+    public Order placeOrder(Long buyerId, String shippingAddress, String paymentMethod, Map<String, String> paymentDetails) {
         if (buyerId == null) {
             throw new ValidationException("Buyer ID is required.");
         }
@@ -62,6 +82,12 @@ public class OrderService {
                 throw new InsufficientStockException("Product '" + p.getName() + "' does not have enough stock.");
             }
             totalAmount = totalAmount.add(p.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
+        }
+
+        PaymentStrategy strategy = PaymentStrategyFactory.getStrategy(paymentMethod);
+        PaymentResult paymentResult = strategy.processPayment(null, totalAmount, paymentDetails != null ? paymentDetails : Collections.emptyMap());
+        if (!paymentResult.isSuccessful()) {
+            throw new ValidationException(paymentResult.getMessage());
         }
 
         try (Connection conn = DBUtil.getConnection()) {
@@ -134,9 +160,24 @@ public class OrderService {
 
     public boolean updateOrderStatus(Long orderId, String newStatus) {
         if (orderId == null || newStatus == null || newStatus.isBlank()) {
-            return false;
+            throw new ValidationException("Order ID and status are required.");
         }
-        return orderDAO.updateOrderStatus(orderId, newStatus.trim().toUpperCase());
+        String target = newStatus.trim().toUpperCase();
+        Set<String> validStatuses = Set.of("PENDING", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED");
+        if (!validStatuses.contains(target)) {
+            throw new ValidationException("Invalid status: " + newStatus + ". Must be one of: " + validStatuses);
+        }
+
+        Order existing = orderDAO.findById(orderId);
+        if (existing == null) {
+            throw new ResourceNotFoundException("Order not found with ID: " + orderId);
+        }
+
+        boolean updated = orderDAO.updateOrderStatus(orderId, target);
+        if (updated) {
+            logger.info("Order {} status updated from {} to {}", orderId, existing.getStatus(), target);
+        }
+        return updated;
     }
 
     public int getTotalOrdersCount() {

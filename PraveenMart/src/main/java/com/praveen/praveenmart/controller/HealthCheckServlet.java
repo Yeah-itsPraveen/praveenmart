@@ -11,8 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 
 @WebServlet(name = "HealthCheckServlet", urlPatterns = {"/api/v1/health"})
 public class HealthCheckServlet extends HttpServlet {
@@ -31,8 +31,8 @@ public class HealthCheckServlet extends HttpServlet {
 
         boolean dbUp = false;
         try (Connection conn = DBUtil.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT 1")) {
+             PreparedStatement stmt = conn.prepareStatement("SELECT 1");
+             ResultSet rs = stmt.executeQuery()) {
             if (rs.next()) {
                 dbUp = true;
             }

@@ -88,7 +88,6 @@
                     <h1 class="font-headline" style="font-size: 1.8rem; margin-bottom: 0.35rem;">
                         Welcome back, <%= user.getName() %>!
                     </h1>
-                    <span class="badge-tag badge-primary"><%= user.getRole() %> Account</span>
 
                     <div class="info-list">
                         <div class="info-item">
@@ -99,36 +98,34 @@
                             <span class="info-key">Email</span>
                             <span class="info-val"><%= user.getEmail() %></span>
                         </div>
-                        <div class="info-item">
-                            <span class="info-key">Role</span>
-                            <span class="info-val"><%= user.getRole() %></span>
-                        </div>
                     </div>
 
                     <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                        <% if ("ADMIN".equalsIgnoreCase(user.getRole())) { %>
+                        <% if ("ADMIN".equalsIgnoreCase(user.getRole()) && "admin@praveenmart.com".equalsIgnoreCase(user.getEmail())) { %>
                             <a href="<%= request.getContextPath() %>/admin/dashboard" class="btn btn-primary btn-pill" style="width: 100%; background: #b06000;">
                                 <span class="material-symbols-outlined">admin_panel_settings</span>
                                 <span>Open Admin Control Center</span>
                             </a>
                         <% } %>
 
-                        <% if ("SELLER".equalsIgnoreCase(user.getRole()) || "ADMIN".equalsIgnoreCase(user.getRole())) { %>
+                        <% if ("SELLER".equalsIgnoreCase(user.getRole())) { %>
                             <a href="<%= request.getContextPath() %>/seller/dashboard" class="btn btn-secondary btn-pill" style="width: 100%;">
                                 <span class="material-symbols-outlined">inventory_2</span>
                                 <span>Open Seller Hub & Orders</span>
                             </a>
                         <% } %>
 
-                        <a href="<%= request.getContextPath() %>/orders" class="btn btn-secondary btn-pill" style="width: 100%;">
-                            <span class="material-symbols-outlined">receipt_long</span>
-                            <span>My Order History</span>
-                        </a>
+                        <% if (!"ADMIN".equalsIgnoreCase(user.getRole())) { %>
+                            <a href="<%= request.getContextPath() %>/orders" class="btn btn-secondary btn-pill" style="width: 100%;">
+                                <span class="material-symbols-outlined">receipt_long</span>
+                                <span>My Order History</span>
+                            </a>
 
-                        <a href="<%= request.getContextPath() %>/products" class="btn btn-primary btn-pill" style="width: 100%;">
-                            <span class="material-symbols-outlined">shopping_bag</span>
-                            <span>Explore Marketplace</span>
-                        </a>
+                            <a href="<%= request.getContextPath() %>/products" class="btn btn-primary btn-pill" style="width: 100%;">
+                                <span class="material-symbols-outlined">shopping_bag</span>
+                                <span>Explore Marketplace</span>
+                            </a>
+                        <% } %>
 
                         <a href="<%= request.getContextPath() %>/logout" class="btn btn-outlined btn-pill" style="width: 100%;">
                             <span class="material-symbols-outlined">logout</span>

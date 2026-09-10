@@ -88,7 +88,15 @@ public class DBUtil {
                 logger.info("Populating database with seed.sql...");
                 executeSqlScript(conn, "seed.sql");
                 logger.info("Seed data inserted successfully.");
+            } else if (productCount < 48) {
+                logger.info("Database has {} products. Applying migrations and adding products...", productCount);
+                executeSqlScript(conn, "db/migrations/V2__add_wishlist_table.sql");
+                executeSqlScript(conn, "db/migrations/V3__add_more_products.sql");
+                executeSqlScript(conn, "db/migrations/V4__add_more_products.sql");
+                executeSqlScript(conn, "db/migrations/V5__remove_mismatched_products.sql");
+                logger.info("Additional products and migrations applied successfully.");
             } else {
+                executeSqlScript(conn, "db/migrations/V5__remove_mismatched_products.sql");
                 logger.info("Database schema already exists with {} products.", productCount);
             }
         } catch (Exception e) {

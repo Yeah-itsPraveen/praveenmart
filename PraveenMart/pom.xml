@@ -61,6 +61,11 @@
             <version>1.7.25</version>
         </dependency>
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+            <version>1.7.25</version>
+        </dependency>
+        <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.2.13</version>
@@ -85,6 +90,30 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+            <version>9.0.85</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-jasper</artifactId>
+            <version>9.0.85</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-el</artifactId>
+            <version>9.0.85</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-util</artifactId>
+            <version>9.0.85</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -93,7 +122,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
+                <version>3.13.0</version>
                 <configuration>
                     <release>17</release>
                 </configuration>
@@ -116,6 +145,21 @@
                     <target>
                         <echo level="info" message="PraveenMart running at http://localhost:${app.http.port}/"/>
                     </target>
+                </configuration>
+            </plugin>
+            <!--
+              Runs Main with Maven's compile classpath.  This intentionally
+              includes the Tomcat dependencies marked as "provided": they
+              belong to an external servlet container in the WAR, but are
+              needed when Main starts the embedded Tomcat server.
+            -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <configuration>
+                    <mainClass>com.praveen.praveenmart.Main</mainClass>
+                    <classpathScope>compile</classpathScope>
                 </configuration>
             </plugin>
             <plugin>

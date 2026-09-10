@@ -66,8 +66,6 @@ public class UserService {
             String r = role.trim().toUpperCase();
             if ("SELLER".equals(r)) {
                 normalizedRole = "SELLER";
-            } else if ("ADMIN".equals(r)) {
-                normalizedRole = "ADMIN";
             } else {
                 normalizedRole = "BUYER";
             }

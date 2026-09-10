@@ -42,8 +42,8 @@ public class AuthFilter implements Filter {
                 res.sendRedirect(contextPath + "/login.jsp?redirect=" + path);
                 return;
             }
-            if (!"ADMIN".equalsIgnoreCase(sessionUser.getRole())) {
-                res.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied: Admin role required.");
+            if (!"ADMIN".equalsIgnoreCase(sessionUser.getRole()) || !"admin@praveenmart.com".equalsIgnoreCase(sessionUser.getEmail())) {
+                res.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied: Admin page is restricted exclusively to admin@praveenmart.com.");
                 return;
             }
         }
@@ -59,9 +59,28 @@ public class AuthFilter implements Filter {
             }
         }
 
+        if (sessionUser != null && "ADMIN".equalsIgnoreCase(sessionUser.getRole())) {
+            if (path.startsWith("/cart") || path.startsWith("/checkout") ||
+                    path.startsWith("/orders") || path.startsWith("/wishlist")) {
+                res.sendRedirect(contextPath + "/admin/dashboard");
+                return;
+            }
+        }
+
         if (path.startsWith("/cart") || path.startsWith("/checkout") ||
-                path.startsWith("/orders") || path.equals("/dashboard.jsp")) {
+                path.startsWith("/orders") || path.startsWith("/wishlist") ||
+                path.equals("/dashboard.jsp") || path.startsWith("/api/v1/cart") ||
+                path.startsWith("/api/v1/wishlist") || path.startsWith("/api/v1/orders")) {
             if (sessionUser == null) {
+                boolean isAjax = "XMLHttpRequest".equalsIgnoreCase(req.getHeader("X-Requested-With"))
+                        || (req.getHeader("Accept") != null && req.getHeader("Accept").contains("application/json"));
+                if (path.startsWith("/api/") || isAjax) {
+                    res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    res.setContentType("application/json");
+                    res.setCharacterEncoding("UTF-8");
+                    res.getWriter().write("{\"success\":false,\"requireLogin\":true,\"redirect\":\"" + contextPath + "/login.jsp\",\"data\":null,\"error\":{\"code\":\"UNAUTHORIZED\",\"message\":\"Authentication required.\"}}");
+                    return;
+                }
                 res.sendRedirect(contextPath + "/login.jsp?redirect=" + path);
                 return;
             }
@@ -76,12 +95,15 @@ public class AuthFilter implements Filter {
                 path.equals("/login") ||
                 path.equals("/login.jsp") ||
                 path.equals("/register") ||
-                 path.equals("/register.jsp") ||
+                path.equals("/register.jsp") ||
                 path.equals("/logout") ||
                 path.startsWith("/products") ||
                 path.startsWith("/product-details") ||
                 path.startsWith("/api/v1/health") ||
                 path.startsWith("/api/v1/products") ||
+                path.startsWith("/api/v1/chat") ||
+                path.startsWith("/api/chat") ||
+                path.startsWith("/api/v1/reviews") ||
                 path.startsWith("/css/") ||
                 path.startsWith("/js/") ||
                 path.startsWith("/images/") ||

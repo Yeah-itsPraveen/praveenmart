@@ -4,14 +4,31 @@ target/
 !**/src/test/**/target/
 .kotlin
 
+### Environment & Secrets ###
+.env
+.env.*
+*.env
+*.env.*
+*.example
+config.properties
+*.pem
+*.key
+*.p12
+*.jks
+credentials.json
+
+### Databases & Runtimes ###
+*.mv.db
+*.trace.db
+tomcat.*/
+tomcat*
+
 ### IntelliJ IDEA ###
-.idea/modules.xml
-.idea/jarRepositories.xml
-.idea/compiler.xml
-.idea/libraries/
+.idea/
 *.iws
 *.iml
 *.ipr
+out/
 
 ### Eclipse ###
 .apt_generated
@@ -35,5 +52,14 @@ build/
 ### VS Code ###
 .vscode/
 
-### Mac OS ###
+### Mac OS & OS Metadata ###
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+### Log files ###
+*.log

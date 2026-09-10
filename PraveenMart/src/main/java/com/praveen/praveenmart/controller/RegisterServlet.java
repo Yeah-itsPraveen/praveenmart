@@ -52,6 +52,12 @@ public class RegisterServlet extends HttpServlet {
                 return;
             }
 
+            if ("ADMIN".equalsIgnoreCase(role)) {
+                request.setAttribute("error", "Admin accounts cannot be registered.");
+                request.getRequestDispatcher("/register.jsp").forward(request, response);
+                return;
+            }
+
             boolean success = userService.registerUser(name.trim(), email.trim(), password, role);
 
             if (!success) {

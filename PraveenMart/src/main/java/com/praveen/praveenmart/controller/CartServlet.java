@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
@@ -87,8 +88,24 @@ public class CartServlet extends HttpServlet {
     private void handleAdd(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
 
+        boolean isAjax = "XMLHttpRequest".equalsIgnoreCase(request.getHeader("X-Requested-With"))
+                || "true".equalsIgnoreCase(request.getParameter("ajax"))
+                || (request.getHeader("Accept") != null && request.getHeader("Accept").contains("application/json"));
+
         User user = getSessionUser(request);
         if (user == null) {
+            if (isAjax) {
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                JsonObject json = new JsonObject();
+                json.addProperty("success", false);
+                json.addProperty("requireLogin", true);
+                json.addProperty("redirect", request.getContextPath() + "/login.jsp");
+                json.addProperty("message", "Please sign in to add products to your cart.");
+                response.getWriter().write(json.toString());
+                return;
+            }
             response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
@@ -101,11 +118,48 @@ public class CartServlet extends HttpServlet {
             cartService.addToCart(user.getId(), productId, quantity);
             request.getSession().setAttribute("cartMessage", "Product added to cart!");
 
+            if (isAjax) {
+                int count = cartService.getCartItemCount(user.getId());
+                BigDecimal total = cartService.calculateCartTotal(user.getId());
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.setStatus(HttpServletResponse.SC_OK);
+                JsonObject json = new JsonObject();
+                json.addProperty("success", true);
+                json.addProperty("message", "Product added to cart!");
+                json.addProperty("itemCount", count);
+                json.addProperty("totalAmount", total);
+                json.addProperty("quantity", quantity);
+                json.addProperty("productId", productId);
+                response.getWriter().write(json.toString());
+                return;
+            }
+
         } catch (InsufficientStockException e) {
             request.getSession().setAttribute("cartError", e.getMessage());
+            if (isAjax) {
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                JsonObject json = new JsonObject();
+                json.addProperty("success", false);
+                json.addProperty("message", e.getMessage());
+                response.getWriter().write(json.toString());
+                return;
+            }
         } catch (Exception e) {
             logger.error("Error adding product to cart", e);
             request.getSession().setAttribute("cartError", "Could not add product to cart.");
+            if (isAjax) {
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                JsonObject json = new JsonObject();
+                json.addProperty("success", false);
+                json.addProperty("message", "Could not add product to cart.");
+                response.getWriter().write(json.toString());
+                return;
+            }
         }
 
         String referer = request.getHeader("Referer");

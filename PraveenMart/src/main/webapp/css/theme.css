@@ -297,6 +297,45 @@ a:hover {
     color: #9c978f;
 }
 
+.password-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    border-width: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    padding: 0 0.95rem;
+    color: var(--color-on-surface-variant);
+    cursor: pointer;
+    transition: color 0.18s ease, transform 0.1s ease;
+    user-select: none;
+    flex-shrink: 0;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+}
+
+.password-toggle-btn:hover {
+    color: var(--color-primary);
+    background: transparent !important;
+    border: none !important;
+}
+
+.password-toggle-btn:focus,
+.password-toggle-btn:active {
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    transform: scale(0.92);
+}
+
+.password-toggle-btn .material-symbols-outlined {
+    font-size: 1.28rem;
+}
+
 .form-select-field {
     flex: 1;
     border: none;
@@ -424,6 +463,106 @@ a:hover {
     gap: 1.5rem;
 }
 
+.site-header .container {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding-left: 1rem !important;
+    padding-right: 1.5rem !important;
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-left: 0;
+}
+
+/* Three-line Menu Button & Dropdown */
+.menu-dropdown-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.menu-toggle-btn {
+    cursor: pointer;
+    background-color: var(--color-surface-container);
+    border: 1px solid var(--color-outline-variant);
+    color: var(--color-on-surface);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    user-select: none;
+}
+
+.menu-toggle-btn:hover,
+.menu-toggle-btn.active {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(176, 96, 0, 0.25);
+    transform: translateY(-1px);
+}
+
+.menu-dropdown-card {
+    position: absolute;
+    top: calc(100% + 0.65rem);
+    left: 0;
+    min-width: 200px;
+    background-color: var(--color-surface-container-high, #ffffff);
+    border: 1px solid var(--color-outline-variant);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 14px 34px rgba(44, 30, 16, 0.14), 0 2px 8px rgba(44, 30, 16, 0.06);
+    padding: 0.4rem;
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    gap: 0.25rem;
+    animation: menuDropdownFade 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes menuDropdownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.menu-dropdown-card.show {
+    display: flex;
+}
+
+.menu-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.85rem;
+    color: var(--color-on-surface);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    transition: all 0.18s ease;
+}
+
+.menu-dropdown-item .material-symbols-outlined {
+    font-size: 1.28rem;
+    color: var(--color-primary);
+    transition: transform 0.18s ease;
+}
+
+.menu-dropdown-item:hover {
+    background-color: var(--color-surface-container);
+    color: var(--color-primary);
+    transform: translateX(4px);
+}
+
+.menu-dropdown-item:hover .material-symbols-outlined {
+    transform: scale(1.12);
+}
+
 .brand-logo {
     font-family: var(--font-headline);
     font-size: 2.1rem;
@@ -438,24 +577,6 @@ a:hover {
 
 .brand-logo:hover {
     color: var(--color-primary-hover);
-}
-
-.nav-links {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-}
-
-.nav-link {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--color-on-surface-variant);
-    text-decoration: none;
-    transition: color 0.2s ease;
-}
-
-.nav-link:hover, .nav-link.active {
-    color: var(--color-primary);
 }
 
 .nav-actions {
